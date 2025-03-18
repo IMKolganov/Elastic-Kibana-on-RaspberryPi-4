@@ -91,12 +91,12 @@ MEM_LIMIT=1073741824
 #COMPOSE_PROJECT_NAME=myproject
 ```
 
-#### License Overview
-Elasticsearch offers different license types, including:
-
+##### License Overview
+###### Elasticsearch offers different license types, including:
+```
 - **Basic License**: Free and includes many features such as security, monitoring, and machine learning APIs with some limitations.
 - **Trial License**: A 30-day trial that enables all premium features of the Platinum license. After expiration, it reverts to the Basic license unless upgraded.
-
+```
 ## Start the stack:
 ```
 docker-compose up -d
@@ -129,7 +129,6 @@ Login with elastic / <your-password>
 ```
 
 ###### Official Elasticsearch Docker Compose
-###### [Official Elasticsearch Docker Compose](https://github.com/elastic/elasticsearch/blob/8.17/docs/reference/setup/install/docker/docker-compose.yml)
-###### [Official Elasticsearch ENV](https://github.com/elastic/elasticsearch/blob/8.17/docs/reference/setup/install/docker/.env)
+###### [Official Elasticsearch Docker Compose](https://github.com/elastic/elasticsearch/blob/8.17/docs/reference/setup/install/docker/docker-compose.yml) [Official Elasticsearch ENV](https://github.com/elastic/elasticsearch/blob/8.17/docs/reference/setup/install/docker/.env)
 
 
