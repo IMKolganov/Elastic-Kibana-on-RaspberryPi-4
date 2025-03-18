@@ -95,7 +95,7 @@ MEM_LIMIT=1073741824
 ###### Elasticsearch offers different license types, including:
 
 ###### - **Basic License**: Free and includes many features such as security, monitoring, and machine learning APIs with some limitations.
-######- **Trial License**: A 30-day trial that enables all premium features of the Platinum license. After expiration, it reverts to the Basic license unless upgraded.
+###### - **Trial License**: A 30-day trial that enables all premium features of the Platinum license. After expiration, it reverts to the Basic license unless upgraded.
 
 ## Start the stack:
 ```
