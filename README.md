@@ -128,8 +128,8 @@ Login with elastic / <your-password>
 💡 **Now you have a lightweight Elasticsearch & Kibana setup running on your Raspberry Pi!** 🚀
 ```
 
-#### Official Elasticsearch Docker Compose
-[Official Elasticsearch Docker Compose](https://github.com/elastic/elasticsearch/blob/8.17/docs/reference/setup/install/docker/docker-compose.yml)
-[Official Elasticsearch ENV](https://github.com/elastic/elasticsearch/blob/8.17/docs/reference/setup/install/docker/.env)
+###### Official Elasticsearch Docker Compose
+###### [Official Elasticsearch Docker Compose](https://github.com/elastic/elasticsearch/blob/8.17/docs/reference/setup/install/docker/docker-compose.yml)
+###### [Official Elasticsearch ENV](https://github.com/elastic/elasticsearch/blob/8.17/docs/reference/setup/install/docker/.env)
 
 
