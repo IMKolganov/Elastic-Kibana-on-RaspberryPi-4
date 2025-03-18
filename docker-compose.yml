@@ -1,0 +1,113 @@
+version: "2.2"
+
+services:
+  setup:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    container_name: elasticsearch_setup
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "Waiting for Elasticsearch to be ready..."
+        until curl -s -u "elastic:${ELASTIC_PASSWORD}" http://elasticsearch:9200 | grep -q "You Know, for Search"; do
+          sleep 5
+        done
+
+        echo "Setting password for elastic..."
+        curl -X POST -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" \
+          http://elasticsearch:9200/_security/user/elastic/_password \
+          -d "{\"password\":\"${ELASTIC_PASSWORD}\"}"
+
+        echo "Setting password for kibana_system..."
+        curl -X POST -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" \
+          http://elasticsearch:9200/_security/user/kibana_system/_password \
+          -d "{\"password\":\"${KIBANA_PASSWORD}\"}"
+
+        echo "Setup complete."
+    restart: "no"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    container_name: elasticsearch
+    environment:
+      - ES_JAVA_OPTS=-Xms512m -Xmx1g 
+      - discovery.type=single-node
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    mem_limit: ${MEM_LIMIT}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s -u elastic:${ELASTIC_PASSWORD} http://localhost:9200 | grep -q 'You Know, for Search'"]
+      interval: 10s
+      timeout: 10s
+      retries: 120
+
+  kibana:
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+    image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
+    container_name: kibana
+    environment:
+      - ES_JAVA_OPTS=-Xms512m -Xmx1g 
+      - SERVERNAME=kibana
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
+      - SERVER_PUBLICBASEURL=http://localhost:5601
+      - TELEMETRY_OPTIN=false
+      - TELEMETRY_ENABLED=false
+      - USAGE_COLLECTION_ENABLED=false
+      - MONITORING_KIBANA_COLLECTION_ENABLED=false
+      - MONITORING_UI_ENABLED=false
+      - TASK_MANAGER_ENABLED=false
+      - XPACK_REPORTING_ENABLED=false
+      - XPACK_TASK_MANAGER_MAX_WORKERS=1
+      - XPACK_CANVAS_ENABLED=false
+      - XPACK_MAPS_ENABLED=false
+      - XPACK_GRAPH_ENABLED=false
+      - XPACK_ML_ENABLED=false
+      - XPACK_SECURITYSOLUTION_ENABLED=false
+      - XPACK_UPTIME_ENABLED=false
+      - XPACK_ENTERPRISESEARCH_ENABLED=false
+      - XPACK_INGESTMANAGER_ENABLED=false
+      - XPACK_FLEET_ENABLED=false
+      - XPACK_SNAPSHOTRESTORE_ENABLED=false
+      - XPACK_ACTIONS_ENABLED=false
+      - XPACK_ALERTING_ENABLED=false
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENABLED=false
+      - XPACK_SECURITY_ENABLED=false
+      - XPACK_SECURITY_AUTHC_API_KEY_ENABLED=false
+      - XPACK_SNAPSHOT_ENABLED=false
+      - XPACK_LOGS_ENABLED=true
+      - XPACK_DISCOVER_ENABLED=true
+      - XPACK_OBSERVABILITY_ENABLED=false
+      - XPACK_APM_ENABLED=false
+      - XPACK_UPTIME_ENABLED=false
+      - XPACK_METRICS_ENABLED=false
+      - SAVEDOBJECTS_MAXIMPORTEXPORTSIZE=100
+      - SAVEDOBJECTS_CACHE_ENABLED=false
+    ports:
+      - "5601:5601"
+    mem_limit: ${MEM_LIMIT}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'"]
+      interval: 10s
+      timeout: 10s
+      retries: 120
+
+volumes:
+  esdata:
+    driver: local
